@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import Popup from "./components/Popup/Popup";
 import NewCard from "./components/NewCard/NewCard";
@@ -6,27 +6,55 @@ import EditProfile from "./components/EditProfile/EditProfile";
 import EditAvatar from "./components/EditAvatar/EditAvatar";
 import Card from "./components/Card/Card";
 
-import avatar from "../../images/avatar.jpg";
-
-const cards = [
-  {
-    isLiked: false,
-    _id: "1",
-    name: "Yosemite Valley",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
-  },
-  {
-    isLiked: false,
-    _id: "2",
-    name: "Lake Louise",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
-  },
-];
+import api from "../../utils/api";
+import CurrentUserContext from "../../contexts/CurrentUserContext";
 
 export default function Main() {
-  const [popup, setPopup] = useState(null);
+  const currentUser = useContext(CurrentUserContext);
 
-  // POPUPS
+  const [popup, setPopup] = useState(null);
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    api
+      .getInitialCards()
+      .then((data) => {
+        setCards(data);
+      })
+      .catch((err) => {
+        console.log("Error al cargar cards:", err);
+      });
+  }, []);
+
+  //LIKE
+  async function handleCardLike(card) {
+    const isLiked = card.isLiked;
+
+    await api
+      .changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        setCards((state) =>
+          state.map((currentCard) =>
+            currentCard._id === card._id ? newCard : currentCard,
+          ),
+        );
+      })
+      .catch((error) => console.error(error));
+  }
+
+  //DELETE
+  async function handleCardDelete(card) {
+    await api
+      .deleteCard(card._id)
+      .then(() => {
+        setCards((state) =>
+          state.filter((currentCard) => currentCard._id !== card._id),
+        );
+      })
+      .catch((error) => console.error(error));
+  }
+
+  //POPUPS
   const newCardPopup = {
     title: "Nuevo lugar",
     children: <NewCard />,
@@ -42,7 +70,7 @@ export default function Main() {
     children: <EditAvatar />,
   };
 
-  // HANDLERS
+  // HANDLERS POPUP
   function handleOpenPopup(popupData) {
     setPopup(popupData);
   }
@@ -60,13 +88,17 @@ export default function Main() {
           className="profile__avatar-container"
           onClick={() => handleOpenPopup(editAvatarPopup)}
         >
-          <img className="profile__image" src={avatar} alt="Avatar" />
+          <img
+            className="profile__image"
+            src={currentUser.avatar}
+            alt="Avatar"
+          />
           <div className="profile__overlay"></div>
         </div>
 
         {/* INFO */}
         <div className="profile__info">
-          <h1 className="profile__title">Jacques Cousteau</h1>
+          <h1 className="profile__title">{currentUser.name}</h1>
 
           <button
             aria-label="Editar perfil"
@@ -75,7 +107,7 @@ export default function Main() {
             onClick={() => handleOpenPopup(editProfilePopup)}
           />
 
-          <p className="profile__description">Explorador</p>
+          <p className="profile__description">{currentUser.about}</p>
         </div>
 
         {/* ADD CARD */}
@@ -95,6 +127,8 @@ export default function Main() {
               key={card._id}
               card={card}
               handleOpenPopup={handleOpenPopup}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
             />
           ))}
         </ul>
