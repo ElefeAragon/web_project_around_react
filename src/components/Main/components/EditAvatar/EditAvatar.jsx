@@ -4,7 +4,6 @@ import CurrentUserContext from "../../../../contexts/CurrentUserContext";
 export default function EditAvatar() {
   const { handleUpdateAvatar } = useContext(CurrentUserContext);
 
-  // 🔥 usamos ref en lugar de useState
   const avatarRef = useRef();
 
   function handleSubmit(e) {
@@ -25,16 +24,16 @@ export default function EditAvatar() {
     >
       <label className="popup__label">
         <input
-          ref={avatarRef} // 🔥 AQUÍ está la clave
-          className="popup__input popup__input_type_avatar"
           type="url"
           name="avatar"
-          placeholder="URL de la imagen"
+          id="avatar-link"
+          className="popup__input"
+          placeholder="Enlace de la imagen"
           required
+          ref={avatarRef}
         />
         <span className="popup__error"></span>
       </label>
-
       <button className="popup__button" type="submit">
         Guardar
       </button>

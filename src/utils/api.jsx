@@ -11,7 +11,7 @@ class Api {
     return Promise.reject(`Error: ${res.status}`);
   }
 
-  // 👤 USER INFO
+  //USER INFO
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
       headers: this._headers,
@@ -29,7 +29,7 @@ class Api {
     }).then(this._checkResponse);
   }
 
-  // 🖼️ AVATAR
+  //AVATAR
   setUserAvatar(data) {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
@@ -40,7 +40,7 @@ class Api {
     }).then(this._checkResponse);
   }
 
-  // 🗂️ CARDS
+  //CARDS
   getInitialCards() {
     return fetch(`${this._baseUrl}/cards`, {
       headers: this._headers,
@@ -65,7 +65,7 @@ class Api {
     }).then(this._checkResponse);
   }
 
-  // ❤️ LIKE / UNLIKE
+  //LIKE / UNLIKE
   changeLikeCardStatus(cardId, isLiked) {
     return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: isLiked ? "PUT" : "DELETE",
@@ -74,7 +74,7 @@ class Api {
   }
 }
 
-// 🔥 instancia única
+//instancia única
 const api = new Api({
   baseUrl: "https://around-api.es.tripleten-services.com/v1",
   headers: {

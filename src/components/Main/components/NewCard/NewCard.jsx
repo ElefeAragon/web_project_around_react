@@ -1,39 +1,63 @@
-export default function NewCard() {
+import { useState } from "react";
+
+export default function NewCard({ onAddPlaceSubmit }) {
+  const [name, setName] = useState("");
+  const [link, setLink] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    onAddPlaceSubmit({
+      name,
+      link,
+    });
+
+    setName("");
+    setLink("");
+  }
+
   return (
     <form
       className="popup__form"
-      name="card-form"
       id="new-card-form"
+      name="card-form"
+      onSubmit={handleSubmit}
       noValidate
     >
       <label className="popup__field">
         <input
-          className="popup__input popup__input_type_card-name"
-          id="card-name"
-          maxLength="30"
-          minLength="1"
-          name="card-name"
-          placeholder="Title"
-          required
           type="text"
+          name="name"
+          id="card-name"
+          className="popup__input popup__input_type_card-name"
+          placeholder="Título"
+          minLength="2"
+          maxLength="30"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
-        <span className="popup__error" id="card-name-error"></span>
+
+        <span className="popup__error card-name-error"></span>
       </label>
 
       <label className="popup__field">
         <input
-          className="popup__input popup__input_type_url"
-          id="card-link"
-          name="link"
-          placeholder="Image link"
-          required
           type="url"
+          name="link"
+          id="card-link"
+          className="popup__input popup__input_type_url"
+          placeholder="Enlace de la imagen"
+          required
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
         />
-        <span className="popup__error" id="card-link-error"></span>
+
+        <span className="popup__error card-link-error"></span>
       </label>
 
-      <button className="button popup__button" type="submit">
-        Guardar
+      <button type="submit" className="popup__button">
+        Crear
       </button>
     </form>
   );
