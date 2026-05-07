@@ -11,16 +11,9 @@ class Api {
     return Promise.reject(`Error: ${res.status}`);
   }
 
-  //USER INFO
+  // 👤 USER INFO
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
-    }).then(this._checkResponse);
-  }
-
-  //CARDS
-  getInitialCards() {
-    return fetch(`${this._baseUrl}/cards`, {
       headers: this._headers,
     }).then(this._checkResponse);
   }
@@ -33,6 +26,24 @@ class Api {
         name: data.name,
         about: data.about,
       }),
+    }).then(this._checkResponse);
+  }
+
+  // 🖼️ AVATAR
+  setUserAvatar(data) {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
+      method: "PATCH",
+      headers: this._headers,
+      body: JSON.stringify({
+        avatar: data.avatar, // 👈 consistente con todo el proyecto
+      }),
+    }).then(this._checkResponse);
+  }
+
+  // 🗂️ CARDS
+  getInitialCards() {
+    return fetch(`${this._baseUrl}/cards`, {
+      headers: this._headers,
     }).then(this._checkResponse);
   }
 
@@ -54,24 +65,16 @@ class Api {
     }).then(this._checkResponse);
   }
 
-  //LIKE-UNLIKE
+  // ❤️ LIKE / UNLIKE
   changeLikeCardStatus(cardId, isLiked) {
-    return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: isLiked ? "PUT" : "DELETE",
       headers: this._headers,
     }).then(this._checkResponse);
   }
-
-  //AVATAR
-  setUserAvatar(avatar) {
-    return fetch(`${this._baseUrl}/users/me/avatar`, {
-      method: "PATCH",
-      headers: this._headers,
-      body: JSON.stringify({ avatar }),
-    }).then(this._checkResponse);
-  }
 }
 
+// 🔥 instancia única
 const api = new Api({
   baseUrl: "https://around-api.es.tripleten-services.com/v1",
   headers: {
